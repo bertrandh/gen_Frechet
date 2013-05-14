@@ -1,0 +1,13 @@
+Ainit <- as.matrix(read.table("Ainit.txt"))
+Yob <- as.matrix(read.table("obs.txt"))
+source("gfb_func.R")
+
+getlpbox_all <- function(Ainit, Yob) {
+    nob <- ncol(Yob)
+    perm <- qr(Ainit)$pivot
+    Ap <- Ainit[,perm]
+    for (i in 1:nob) {
+        lpBV <- getlpbox(Ap, Yob[,i], perm)
+    }
+}
+

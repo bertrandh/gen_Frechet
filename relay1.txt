@@ -1,0 +1,9 @@
+"a" "b" "c" "d" "e" "f" "g" "h"
+"a" "a" "b" "c" "d" "r2" "r2" "r2" "r2"
+"b" "a" "b" "c" "d" "r2" "r2" "r2" "r2"
+"c" "a" "b" "c" "d" "r2" "r2" "r2" "r2"
+"d" "a" "b" "c" "d" "r2" "r2" "r2" "r2"
+"e" "a" "b" "c" "d" NA NA NA NA
+"f" "a" "b" "c" "d" NA NA NA NA
+"g" "a" "b" "c" "d" NA NA NA NA
+"h" "a" "b" "c" "d" NA NA NA NA

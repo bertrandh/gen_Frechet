@@ -1,0 +1,56 @@
+source("../gfb_func.R")
+m1 <- 5; m2 <- 5
+idxfill0 <- as.matrix(read.table("ct_1_idxfill0.txt"))
+nfill <- length(idxfill0)
+T0 <- round(as.matrix(read.table("ct_1_T0.txt")))
+
+A <- matrix(0, nrow=m1+m2, ncol<-m1*m2)
+for (i in 1:m1) {
+    A[i,((i-1)*m2+1):(i*m2)] <- 1
+}
+for (i in 1:m2) {
+    A[m1+i, seq(from=i, to=m1*m2, by=m2)] <- 1
+}
+Ainit <- A
+yinit <- A %*% as.vector(T0)
+
+ctab <- matrix("0", nrow=m1+1, ncol=m2+1)
+ctab[1:m1,m2+1] <- yinit[1:m1]
+ctab[1:m1, m2+1] <- yinit[(m1+1):(m1+m2)]
+ctab[m1+1,1:m2] <- yinit[1:m1]
+ctab[m1+1,m2+1] <- sum(as.numeric(ctab[1:m1,m2+1]))
+
+A0 <- Ainit
+y0 <- yinit
+idxfill <- idxfill0
+bds <- matrix(0, nrow=2, ncol=nfill+1)
+red <- reduceA(A0,y0,1:ncol(A0),1)
+B <- get1bd(red$A,red$y,red$perm,1)
+bds[1,1] <- B$xmin
+bds[2,1] <- B$xmax
+k <- 1
+while (length(idxfill > 0)) {
+    id <- idxfill[1]
+    red <- reduceA(A0,y0,1:ncol(A0),id)
+    B <- get1bd(red$A,red$y,red$perm,red$id)
+    t <- round((B$xmin + B$xmax)/2)
+    ij <- arr_ind(idxfill0[k], m1, m2)
+    ctab[ij$i,ij$j] <- t
+    y0 <- y0 - t * A0[,id]
+    if(any(y0 < 0)) browser()
+    A0 <- A0[,-id]
+    idx <- which(idxfill > id)
+    idxfill[idx] <- idxfill[idx] - 1
+    idxfill <- idxfill[-1]
+    red <- reduceA(A0,y0,1:ncol(A0),1)
+    B <- get1bd(red$A,red$y,red$perm,red$id)
+    bds[1,k+1] <- B$xmin
+    bds[2,k+1] <- B$xmax
+    k <- k + 1
+}
+print(ctab)
+bds[1,] <- bds[1,] + 0
+bds[2,] <- bds[2,] + 0
+barplot(bds, offset=-0, names.arg=c(1,idxfill0), beside=T)
+TindxTcell <- round(as.matrix(read.table("TindxTcell.txt")))
+print(TindxTcell)
